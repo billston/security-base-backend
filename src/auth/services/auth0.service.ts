@@ -1,14 +1,16 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpModule, HttpService } from '@nestjs/axios'; 
 import { ConfigService } from '@nestjs/config';
 import { ManagementClient, AuthenticationClient } from 'auth0';
 import { Auth0User } from '../interfaces/auth0-user.interface';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class Auth0Service {
   private managementClient: ManagementClient;
   private authClient: AuthenticationClient;
 
-  constructor(private configService: ConfigService) {
+  constructor(private configService: ConfigService, private httpService: HttpService) {
     this.managementClient = new ManagementClient({
       domain: configService.get('auth0.domain'),
       clientId: configService.get('auth0.clientId'),
@@ -23,10 +25,18 @@ export class Auth0Service {
 
   async validateToken(token: string): Promise<Auth0User> {
     try {
-      // Usamos el método userInfo que es el correcto según la documentación de Auth0
-      const userInfo = await this.authClient.userInfo(token);
-      return userInfo as Auth0User;
-      
+      const response = await lastValueFrom(
+        this.httpService.get(
+          `https://${process.env.AUTH0_DOMAIN}/userinfo`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+      );
+
+      return response.data as Auth0User;
     } catch (error) {
       throw new UnauthorizedException('Invalid token');
     }

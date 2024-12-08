@@ -16,18 +16,28 @@ import { MenusModule } from './menus/menus.module';
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get('database.host'),
-        port: configService.get('database.port'),
-        username: configService.get('database.username'),
-        password: configService.get('database.password'),
-        database: configService.get('database.database'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: false,
-        logging: true,
-        namingStrategy: new SnakeNamingStrategy(),
-      }),
+      useFactory: async (configService: ConfigService) => {
+        try {
+          return {
+            type: 'postgres',
+            host: configService.get('database.host'),
+            port: configService.get('database.port'),
+            username: configService.get('database.username'),
+            password: configService.get('database.password'),
+            database: configService.get('database.database'),
+            entities: [__dirname + '/**/*.entity{.ts,.js}'],
+            synchronize: false,
+            logging: true,
+            namingStrategy: new SnakeNamingStrategy(),
+            ssl: {
+              rejectUnauthorized: false, // Solo para desarrollo
+            },
+          };
+        } catch (error) {
+          console.error('Error connecting to the database:', error);
+          throw error; // Lanza el error para que sea manejado por NestJS
+        }
+      },
       inject: [ConfigService],
     }),
     AuthModule,

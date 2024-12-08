@@ -8,6 +8,7 @@ import { AuthService } from './services/auth.service';
 import { Auth0Service } from './services/auth0.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { Usuario } from '../entities/usuario.entity';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { Usuario } from '../entities/usuario.entity';
       inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([Usuario]),
+    HttpModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, Auth0Service, JwtStrategy],
