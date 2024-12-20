@@ -9,7 +9,12 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
-
+  
+  @Post('callback')
+  async handleAuthCallback(@Body('code') code: string) {
+    return await this.authService.validateCodeAndGenerateToken(code);
+  }
+  
   @Post('login')
   @ApiOperation({ summary: 'Login with Auth0 token' })
   @ApiResponse({ status: 200, type: TokenResponseDto })

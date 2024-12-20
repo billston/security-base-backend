@@ -15,6 +15,11 @@ export class AuthService {
     private usuarioRepository: Repository<Usuario>,
   ) {}
 
+  async validateCodeAndGenerateToken(code: string): Promise<any> {
+    const token = await this.auth0Service.validateCodeAndGenerateToken(code);
+    return token;
+  }
+
   async validateAuth0Token(token: string): Promise<TokenResponseDto> {
     const auth0User = await this.auth0Service.validateToken(token);
     

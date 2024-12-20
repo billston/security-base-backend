@@ -25,6 +25,7 @@ import { HttpModule } from '@nestjs/axios';
     }),
     TypeOrmModule.forFeature([Usuario]),
     HttpModule,
+    ConfigModule.forRoot({ isGlobal: true }),
   ],
   controllers: [AuthController],
   providers: [AuthService, Auth0Service, JwtStrategy],

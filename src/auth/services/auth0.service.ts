@@ -23,6 +23,42 @@ export class Auth0Service {
     });
   }
 
+  async validateCodeAndGenerateToken(code: string): Promise<any> {
+    const domain = this.configService.get('auth0.domain');
+    const clientId = this.configService.get('auth0.clientId');
+    const clientSecret = this.configService.get('auth0.clientSecret');
+    const redirectUri = this.configService.get('auth0.redirectUri');
+
+    // Realizar la solicitud al endpoint de Auth0 para intercambiar el código por un token
+    try {
+      console.log('Code request:', code);
+      console.log('Domain:', domain);
+      console.log('Client id:', clientId);
+      console.log('Client secret:', clientSecret);
+      console.log('Redirect uri:', redirectUri);
+      
+
+      const response = await this.httpService.axiosRef.post(
+        `https://${domain}/oauth/token`,
+        {
+          grant_type: 'authorization_code',
+          client_id: clientId,
+          client_secret: clientSecret,
+          code,
+          redirect_uri: redirectUri,
+        }
+      );
+      
+      console.log('Token response:', response);
+
+      // Retornar el token al controlador
+      return response.data;
+    } catch (error) {
+      console.log('Error:', error.response.data);
+      throw new Error('Error validating code with Auth0: ' + error.message);
+    }
+  }
+
   async validateToken(token: string): Promise<Auth0User> {
     try {
       const response = await lastValueFrom(
