@@ -29,9 +29,9 @@ import { MenusModule } from './menus/menus.module';
             synchronize: false,
             logging: true,
             namingStrategy: new SnakeNamingStrategy(),
-            // ssl: {
-            //   rejectUnauthorized: false, // Solo para desarrollo
-            // },
+            ssl: {
+              rejectUnauthorized: false, // Solo para desarrollo
+            },
           };
         } catch (error) {
           console.error('Error connecting to the database:', error);
